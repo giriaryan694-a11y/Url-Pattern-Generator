@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Pattern Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 15px;
+      width: 420px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #38bdf8;
+      color: black;
+      cursor: pointer;
+      margin: 5px;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0ea5e9;
+    }
+    textarea {
+      height: 100px;
+    }
+    .result {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .footer {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>URL Pattern Generator</h2>
+
+  <!-- Generator -->
+  <input type="text" id="urlInput" placeholder="Enter URL (e.g. https://google.com)">
+  <button onclick="generatePattern()">Generate Pattern</button>
+  <button onclick="copyPattern()">Copy Pattern</button>
+
+  <textarea id="output" placeholder="Generated regex will appear here..."></textarea>
+
+  <hr>
+
+  <!-- Matcher -->
+  <h3>Pattern Tester</h3>
+  <input type="text" id="patternInput" placeholder="Enter regex pattern">
+  <input type="text" id="testUrl" placeholder="Enter URL to test">
+  <button onclick="testPattern()">Test Match</button>
+
+  <div class="result" id="result"></div>
+
+  <div class="footer">Made by Aeryan Giri</div>
+</div>
+
+<script>
+function generatePattern() {
+  const url = document.getElementById("urlInput").value.trim();
+
+  if (!url) {
+    alert("Enter a URL first");
+    return;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const domainParts = parsed.hostname.split(".");
+    const domain = domainParts[domainParts.length - 2] || "example";
+
+    const pattern = `https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.${domain}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)`;
+
+    document.getElementById("output").value = pattern;
+  } catch (e) {
+    alert("Invalid URL");
+  }
+}
+
+function copyPattern() {
+  const output = document.getElementById("output");
+
+  if (!output.value) {
+    alert("Nothing to copy");
+    return;
+  }
+
+  output.select();
+  document.execCommand("copy");
+  alert("Pattern copied!");
+}
+
+function testPattern() {
+  const patternInput = document.getElementById("patternInput").value;
+  const url = document.getElementById("testUrl").value;
+  const resultDiv = document.getElementById("result");
+
+  if (!patternInput || !url) {
+    alert("Enter both pattern and URL");
+    return;
+  }
+
+  try {
+    const regex = new RegExp(patternInput);
+    const isMatch = regex.test(url);
+
+    resultDiv.textContent = isMatch ? "✅ MATCH" : "❌ NO MATCH";
+    resultDiv.style.color = isMatch ? "lightgreen" : "red";
+  } catch (e) {
+    resultDiv.textContent = "⚠️ Invalid Regex";
+    resultDiv.style.color = "orange";
+  }
+}
+</script>
+
+</body>
+</html>
